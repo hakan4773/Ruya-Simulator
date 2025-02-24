@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-black text-gray-100;
+}
+
+/* Özel scroll bar stilleri */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-black/20;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-purple-600 rounded-full;
+}
+
+/* Buton hover efektleri */
+button, a {
+  @apply transition-all duration-200;
+}
+
+/* Form input focus stilleri */
+input:focus {
+  @apply outline-none ring-2 ring-purple-500;
+} 
+.loader {
+  @apply w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin;
+}
+
+/* Animasyon için Tailwind ile çalışmaz, bu yüzden custom CSS gerekli */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
