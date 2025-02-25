@@ -36,11 +36,9 @@ body: JSON.stringify(formData),
   console.error("Hata:", error);
       alert("Rüya oluştururken bir hata oluştu. Lütfen tekrar deneyin.");
 }
-
-
-
    
   };
+  
 
   return (
     <div className="container mx-auto min-h-screen flex items-center justify-center px-4">

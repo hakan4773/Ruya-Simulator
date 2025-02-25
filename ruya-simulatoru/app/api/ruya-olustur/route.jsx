@@ -145,12 +145,13 @@ export async function POST(request) {
       ton,
       image_url: imageUrl,
       sound_url: null,
+      isShare:false,
     });
 
     await ruya.save();
 
     return NextResponse.json(
-      { id: ruya._id, story, image: imageUrl },
+      { id: ruya._id, story, image: imageUrl,isShare:Ruya.isShare },
       { status: 201 }
     );
   } catch (error) {
@@ -161,3 +162,30 @@ export async function POST(request) {
     );
   }
 }
+export async function GET(req) {
+  try {
+    await connectToDatabase();
+
+const shareStories=await Ruya.find({ isShare: true }).sort({ createdAt: -1 }).limit(10);
+console.log(shareStories)
+
+if(!shareStories){
+  NextResponse.json({error:"Ruya bulunamadı "},{status:404})
+}
+
+const stories=shareStories.map((story)=>({
+  _id:story._id.toString(),
+  story:story.story,
+  image:story.image_url,
+  isShare:story.isShare
+})) 
+
+
+return NextResponse.json(stories, { status: 200 });
+
+ } catch (error) {
+  console.error('Hata:', error);
+  return NextResponse.json({ error: 'Bir hata oluştu.' }, { status: 500 });
+  }
+}
+
