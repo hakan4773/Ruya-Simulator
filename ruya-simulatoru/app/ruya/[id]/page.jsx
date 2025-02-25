@@ -18,6 +18,9 @@ export default function RuyaGoster({params}) {
     throw new Error(`Rüya yüklenemedi: ${errorText || response.statusText}`);
 
   }
+
+
+
   setMydream(data)
   setLoading(false);
  } catch (error) {
@@ -48,6 +51,26 @@ RuyaGetir();
       </div>
     );
   }
+
+const handleShare=async()=> {
+try {
+  const response =await fetch(`/api/ruya-olustur/${id}`,  
+    { method: "PUT",body: JSON.stringify({ isShare: true })
+    ,headers: { "Content-Type": "application/json" },}); 
+ 
+    if (!response.ok) {
+    throw new Error(`Rüya paylaşılamadı: ${errorText || response.statusText}`);
+  }
+  if (!response.ok) {
+    throw new Error("Paylaşım durumu güncellenemedi");
+  }
+
+} catch (error) {
+  console.error("Hata oluştu:", error);
+ 
+}
+
+}
   
   return (
     <div className="container mx-auto min-h-screen flex items-center justify-center px-4">
@@ -81,7 +104,10 @@ RuyaGetir();
           <button className="flex-1 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
             Arşive Ekle
           </button>
-          <button className="flex-1 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+          <button className="flex-1 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+          onClick={handleShare}
+          
+          >
             Paylaş
           </button>
         </div>
