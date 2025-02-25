@@ -8,8 +8,8 @@ const RuyaSchema = new mongoose.Schema({
   ton: { type: String, required: true },
   image_url: { type: String, required: false },
   sound_url: { type: String, required: false },
-  isShare:{type:String,required:false},
-  created_at: { type: Date, default: Date.now },
+  isShare: { type: Boolean, default: false }, 
+   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
 

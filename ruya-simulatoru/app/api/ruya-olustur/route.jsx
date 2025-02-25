@@ -167,7 +167,6 @@ export async function GET(req) {
     await connectToDatabase();
 
 const shareStories=await Ruya.find({ isShare: true }).sort({ createdAt: -1 }).limit(10);
-console.log(shareStories)
 
 if(!shareStories){
   NextResponse.json({error:"Ruya bulunamadı "},{status:404})

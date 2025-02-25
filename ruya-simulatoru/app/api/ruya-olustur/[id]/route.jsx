@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "../../../libs/mongodb";
 import Ruya from "../../../models/Ruya";
 export async function GET(req,{params}) {
-  try {
-    await connectToDatabase();
+     await connectToDatabase();
+ try {
 const {id}=params;
 
 const myStory=await Ruya.findById(id);
@@ -21,8 +21,8 @@ return NextResponse.json({id:myStory._id,story:myStory.story,mekan: myStory.meka
 export async function PUT(req, context) {
   await connectToDatabase();
   try {
-    const params = await context.params;
-    const { id } = params;
+    const { params } = context;
+    const { id } = await params;
     const { isShare } = await req.json();
 
     const shareStory = await Ruya.findByIdAndUpdate(
@@ -36,7 +36,7 @@ export async function PUT(req, context) {
     if (!shareStory) {
       return NextResponse.json({ error: "Ruya güncellenemedi" }, { status: 404 });
     }
-    return NextResponse.json({ id: shareStory._id, isShare: shareStory.isShare }, { status: 200 });
+    return NextResponse.json({id: shareStory._id, isShare: shareStory.isShare }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Bir hata oluştu." }, { status: 500 });
   }
