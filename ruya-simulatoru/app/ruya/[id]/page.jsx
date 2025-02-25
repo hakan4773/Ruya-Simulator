@@ -6,7 +6,7 @@ export default function RuyaGoster({params}) {
   const { id } = paramsData;
   const [myDream,setMydream]=useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [isShared, setIsShared] = useState(false);
   useEffect(()=>{
   async function RuyaGetir() {
  try {
@@ -18,9 +18,6 @@ export default function RuyaGoster({params}) {
     throw new Error(`Rüya yüklenemedi: ${errorText || response.statusText}`);
 
   }
-
-
-
   setMydream(data)
   setLoading(false);
  } catch (error) {
@@ -32,6 +29,7 @@ RuyaGetir();
 
   },[])
 
+  //seslendirme
   const handleSpeak = () => {
     if (myDream && myDream.story) {
       const utterance = new SpeechSynthesisUtterance(myDream.story);
@@ -52,19 +50,19 @@ RuyaGetir();
     );
   }
 
-const handleShare=async()=> {
+  //paylaşma
+const handleShare=async(isShared)=> {
 try {
   const response =await fetch(`/api/ruya-olustur/${id}`,  
-    { method: "PUT",body: JSON.stringify({ isShare: true })
+    { method: "PUT",body: JSON.stringify({ isShare: !isShared })
     ,headers: { "Content-Type": "application/json" },}); 
  
     if (!response.ok) {
+      const errorText = await response.text(); 
     throw new Error(`Rüya paylaşılamadı: ${errorText || response.statusText}`);
   }
-  if (!response.ok) {
-    throw new Error("Paylaşım durumu güncellenemedi");
-  }
-
+  const data=await response.json();
+setIsShared(data.isShare);
 } catch (error) {
   console.error("Hata oluştu:", error);
  
@@ -105,7 +103,7 @@ try {
             Arşive Ekle
           </button>
           <button className="flex-1 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-          onClick={handleShare}
+          onClick={()=>handleShare(!isShared)}
           
           >
             Paylaş
