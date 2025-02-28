@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "../../../libs/mongodb";
 import Ruya from "../../../models/Ruya";
+
 export async function GET(req,{params}) {
      await connectToDatabase();
  try {

@@ -32,14 +32,8 @@ export async function POST(request) {
     }
 
     const tonCumlesi = getRandomItem(sablonlar.tonlar[ton]);
-    const tonDescriptions = {
-      peaceful: "peaceful, calm atmosphere",
-      tense: "tense, dark atmosphere",
-      comic: "funny, quirky atmosphere",
-      scary: "scary, eerie atmosphere",
-      excited: "exciting, adventurous atmosphere",
-    };
-    const storyPrompt = `A story about a ${karakter} who was ${eylem} in ${mekan}, in a ${tonDescriptions[ton]}. The ${karakter} said, "${tonCumlesi}"`;
+    
+    const storyPrompt = `A story about a ${karakter} who was ${eylem} in ${mekan}, with the ${karakter} saying, "${tonCumlesi}"`;
     const INFERKIT_API_KEY = process.env.INFERKIT_API_KEY;
 
     if (!INFERKIT_API_KEY) {
@@ -86,6 +80,7 @@ export async function POST(request) {
     const prompt = `${karakter} ${eylem} in ${mekan}, surreal, ${
       sablonlar.tonlar[ton] || "dreamy"
     }, highly detailed, dreamy style.`;
+
     const EDENAI_API_KEY = process.env.EDENAI_API_KEY;
 
     if (!EDENAI_API_KEY) {
@@ -162,6 +157,7 @@ export async function POST(request) {
     );
   }
 }
+
 export async function GET(req) {
   try {
     await connectToDatabase();
@@ -187,4 +183,5 @@ return NextResponse.json(stories, { status: 200 });
   return NextResponse.json({ error: 'Bir hata oluştu.' }, { status: 500 });
   }
 }
+
 
