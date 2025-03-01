@@ -7,7 +7,12 @@ export default function RuyaGoster({params}) {
   const [myDream,setMydream]=useState(null);
   const [loading, setLoading] = useState(true);
   const [isShared, setIsShared] = useState(null);
-  useEffect(()=>{
+
+  const [translatedStory, setTranslatedStory] = useState(null);
+  const [selectedLang, setSelectedLang] = useState("en");
+
+  const [loadingTranslate, setLoadingTranslate] = useState(false);
+    useEffect(()=>{
   async function RuyaGetir() {
  try {
   const response=await fetch(`/api/ruya-olustur/${id}`);
@@ -29,20 +34,45 @@ export default function RuyaGoster({params}) {
 RuyaGetir();
 
   },[])
-  console.log("isShared ",isShared)
+
 
   
   //seslendirme
   const handleSpeak = () => {
-    if (myDream && myDream.story) {
-      const utterance = new SpeechSynthesisUtterance(myDream.story);
-      utterance.lang = 'en-US';
+    if (translatedStory) {
+      const utterance = new SpeechSynthesisUtterance(translatedStory);
+      utterance.lang = 'tr-TR';
       window.speechSynthesis.speak(utterance);
     }
   };
 
+  //çeviri fonksiyonu
+  const translateText = async (text, targetLang) => {
+    setLoadingTranslate(true);
+    try {
+        const response = await fetch(`https://lingva.ml/api/v1/auto/${targetLang}/${encodeURIComponent(text)}`);
+        const data = await response.json();
+        setLoadingTranslate(false);  
+        return data.translation;
+
+    } catch (error) {
+        console.error("Çeviri yapılamadı:", error);
+    }
+  
+  };
+  
 
 
+  const handleTranslate=async()=> {
+    if (myDream && myDream.story) {
+      try {
+        const translation = await translateText(myDream.story, selectedLang);
+        setTranslatedStory(translation);
+      } catch (error) {
+        console.error("Çeviri yapılamadı:", error); 
+    }
+  
+  }}
 
   if (loading) {
     return (
@@ -52,7 +82,14 @@ RuyaGetir();
       </div>
     );
   }
-
+  if (loadingTranslate) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        <p className="mt-4 text-lg text-gray-200"> Çevriliyor...Lütfen bekleyin...</p>
+      </div>
+    );
+  }
   //paylaşma
 const handleShare=async()=> {
 try {
@@ -91,10 +128,19 @@ setIsShared(data.isShare);
 
         <p className="text-white text-lg mb-8">
           {/* Rüya metni API'den gelecek */}
-          {myDream?.story || "Rüya yüklenemedi."}
+          {translatedStory || myDream?.story}
                   </p>
-
+          <div className="">
+              <select className="text-black p-1" value={selectedLang}  onChange={(e)=>setSelectedLang(e.target.value)} >
+              <option value="en">English</option>
+              <option value="tr">Türkçe</option>
+              <option value="es">Español</option>
+          </select>
+          <button onClick={handleTranslate} className="m-3 bg-red-500 p-1 rounded-md hover:bg-red-600"
+          >Çevir</button>
+          </div>   
         <div className="flex space-x-4">
+        
         <button
             onClick={handleSpeak}
             className="flex-1 p-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors"
