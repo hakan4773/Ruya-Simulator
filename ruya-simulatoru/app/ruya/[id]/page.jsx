@@ -7,11 +7,10 @@ export default function RuyaGoster({params}) {
   const [myDream,setMydream]=useState(null);
   const [loading, setLoading] = useState(true);
   const [isShared, setIsShared] = useState(null);
-
-  const [translatedStory, setTranslatedStory] = useState(null);
+  const [translatedStory, setTranslatedStory] = useState(myDream?.story);
   const [selectedLang, setSelectedLang] = useState("en");
-
   const [loadingTranslate, setLoadingTranslate] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
     useEffect(()=>{
   async function RuyaGetir() {
  try {
@@ -34,15 +33,14 @@ export default function RuyaGoster({params}) {
 RuyaGetir();
 
   },[])
-
-
   
   //seslendirme
   const handleSpeak = () => {
-    if (translatedStory) {
-      const utterance = new SpeechSynthesisUtterance(translatedStory);
-      utterance.lang = 'tr-TR';
+    if (myDream && myDream.story) {
+      const utterance = new SpeechSynthesisUtterance(translatedStory || myDream.story);
+      utterance.lang = selectedLang;
       window.speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
     }
   };
 
@@ -130,7 +128,7 @@ setIsShared(data.isShare);
           {/* Rüya metni API'den gelecek */}
           {translatedStory || myDream?.story}
                   </p>
-          <div className="">
+          <div>
               <select className="text-black p-1" value={selectedLang}  onChange={(e)=>setSelectedLang(e.target.value)} >
               <option value="en">English</option>
               <option value="tr">Türkçe</option>
@@ -140,13 +138,23 @@ setIsShared(data.isShare);
           >Çevir</button>
           </div>   
         <div className="flex space-x-4">
-        
-        <button
+        {isSpeaking ? ( 
+    
+  <button
+onClick={() => {  window.speechSynthesis.cancel(); setIsSpeaking(false); }}
+className="flex-1 p-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+Durdur
+</button>
+        ) :(
+
+            <button
             onClick={handleSpeak}
             className="flex-1 p-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors"
           >
-            Seslendir
-          </button>
+          Seslendir  
+          </button> 
+        )}
+         
           <button className="flex-1 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
             Devam Et
           </button>
