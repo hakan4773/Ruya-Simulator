@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '../../libs/mongodb';
 import sablonlar from '../../data/RuyaTonlari.json';
 import axios from 'axios';
-import Ruya from "../../models/ruya";
+import Ruya from '../../models/ruya';
 
 function getRandomItem(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-export async function POST() {
+export async function GET() {
   await connectToDatabase();
   try {
 
@@ -64,46 +64,46 @@ export async function POST() {
     }
 
     // Resim oluştur
-    const imagePrompt = `${karakter} ${eylem} in ${mekan}, surreal, ${tonDescriptions[ton]}, highly detailed, dreamy style.`;
-    const EDENAI_API_KEY = process.env.EDENAI_API_KEY;
-    let imageUrl = null;
+    // const imagePrompt = `${karakter} ${eylem} in ${mekan}, surreal, ${tonDescriptions[ton]}, highly detailed, dreamy style.`;
+    // const EDENAI_API_KEY = process.env.EDENAI_API_KEY;
+    // let imageUrl = null;
    
-        const imageOptions = {
-            method: "POST",
-          //  url: "https://api.edenai.run/v2/image/generation",
-            headers: {
-              authorization: `Bearer ${EDENAI_API_KEY}`,
-            },
-            data: {
-              providers: "openai",
-              text: imagePrompt,
-              resolution: "1024x1024",
-            },
-          };
-          try {
-            const imageResponse = await axios.request(imageOptions);
-            console.log("API Yanıtı:", JSON.stringify(imageResponse.data, null, 2));
+    //     const imageOptions = {
+    //         method: "POST",
+    //       //  url: "https://api.edenai.run/v2/image/generation",
+    //         headers: {
+    //           authorization: `Bearer ${EDENAI_API_KEY}`,
+    //         },
+    //         data: {
+    //           providers: "openai",
+    //           text: imagePrompt,
+    //           resolution: "1024x1024",
+    //         },
+    //       };
+    //       try {
+    //         const imageResponse = await axios.request(imageOptions);
+    //         console.log("API Yanıtı:", JSON.stringify(imageResponse.data, null, 2));
       
-            if (
-              imageResponse.data.openai?.items &&
-              imageResponse.data.openai.items.length > 0
-            ) {
-              const firstItem = imageResponse.data.openai.items[0];
-              if (firstItem.url) {
-                imageUrl = firstItem.url;
-              } else if (firstItem.image) {
-                imageUrl = firstItem.image;
-              } else {
-                console.error("Beklenen URL veya image alanı bulunamadı:", firstItem);
-                throw new Error("API görsel URL’si döndürmedi.");
-              }
-            } else {
-              throw new Error("API items dizisi boş veya eksik.");
-            }
+    //         if (
+    //           imageResponse.data.openai?.items &&
+    //           imageResponse.data.openai.items.length > 0
+    //         ) {
+    //           const firstItem = imageResponse.data.openai.items[0];
+    //           if (firstItem.url) {
+    //             imageUrl = firstItem.url;
+    //           } else if (firstItem.image) {
+    //             imageUrl = firstItem.image;
+    //           } else {
+    //             console.error("Beklenen URL veya image alanı bulunamadı:", firstItem);
+    //             throw new Error("API görsel URL’si döndürmedi.");
+    //           }
+    //         } else {
+    //           throw new Error("API items dizisi boş veya eksik.");
+    //         }
 
-    } catch (imageError) {
-      console.warn('Görsel oluşturma hatası:', imageError.message);
-    }
+    // } catch (imageError) {
+    //   console.warn('Görsel oluşturma hatası:', imageError.message);
+    // }
 
     const ruya = new Ruya({
       story,
@@ -111,13 +111,13 @@ export async function POST() {
       eylem,
       karakter,
       ton,
-      image_url: imageUrl,
+      image_url: null,
       sound_url: null,
     });
 
     await ruya.save();
 
-    return NextResponse.json({ id: ruya._id, story, image: imageUrl }, { status: 200 });
+    return NextResponse.json({ id: ruya._id, story, image: ruya.image_url }, { status: 200 });
   } catch (error) {
     console.error('Hata:', error);
     return NextResponse.json({ error: error.message || 'Bir hata oluştu.' }, { status: 500 });
