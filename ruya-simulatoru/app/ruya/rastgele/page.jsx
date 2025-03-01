@@ -1,59 +1,90 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 
-function page({params}) {
-  const paramsData=React.use(params);
-  const {id}=paramsData;
+function page() {
 const [randomStories, setRandomStories] = useState(null);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
  
-
 useEffect(() => {
   async function fetchRandomStories() {
-    setLoading(true);
-
-    try{
-const response=await fetch(`/api/random-ruya`);
-if(!response.ok){
-  throw new Error('API hatası');  
-}
-const data=await response.json();
-setRandomStories(data);
-setLoading(false);
-
-    }
-    catch(error){
-      console.error(error);
-      setError(error);
+    try {
+      const response = await fetch("/api/random-ruya", {
+        method: "GET",
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Rastgele rüya oluşturulamadı: ${response.status} - ${errorText || response.statusText}`);
+      }
+      const data = await response.json();
+      setRandomStories(data);
+    } catch (error) {
+      console.error("Rastgele rüya hatası:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false); // Yükleme durumunu her durumda kapat
     }
   }
-
-fetchRandomStories();
+  fetchRandomStories();
 }, []);
 
+const handleNewDream = async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    const response = await fetch("/api/random-ruya", {
+      method: "GET",
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Rastgele rüya oluşturulamadı: ${response.status} - ${errorText || response.statusText}`);
+    }
+    const data = await response.json();
+    setRandomStories(data);
+  } catch (error) {
+    setError(error.message);
+    console.error("Yeni rüya hatası:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 const handleSpeak = () => {
-if(randomStories && randomStories.story){
-const utterance =new SpeechSynthesisUtterance(randomStories.story);
-//utterance.lang='en-US';
-utterance.lang='tr-TR';
-window.speechSynthesis.speak(utterance);
-}
+  if (randomStories && randomStories.story) {
+    const utterance = new SpeechSynthesisUtterance(randomStories.story);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  }
 };
 
-if(loading){
-  return(
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="loader"></div>
-      <p className="mt-4 text-lg text-gray-700">Oluşturuluyor...</p>
+if (loading) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-300 ">
+      <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+      <p className="mt-4 text-lg text-gray-700">Rastgele rüyanız Oluşturuluyor...</p>
+    </div>
+  );
+}
+if (error) {
+  return (
+    <div className="container mx-auto min-h-screen flex items-center justify-center px-4">
+      <div className="text-red-500 text-center mt-10">Hata: {error}</div>
     </div>
   );
 }
 
   return (
 
-    <div className='container mx-auto  flex flex-col items-center justify-center min-h-screen '>
+    <div className='container mx-auto  flex flex-col items-center justify-center min-h-screen  py-8'>
  <div className="bg-black/30 backdrop-blur-md rounded-xl p-8 w-full max-w-4xl">
+        <button
+          onClick={handleNewDream}
+          className="mb-6 p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+        >
+          Yeni Rüya Oluştur
+        </button>
+
+
+
       <div className="relative w-full  mb-6">
       {randomStories?.image && (
         <img
