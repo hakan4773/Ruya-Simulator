@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '../../libs/mongodb';
 import sablonlar from '../../data/RuyaTonlari.json';
 import axios from 'axios';
-import Ruya from '../../models/ruya';
+import Ruya from '../../models/Ruya';
 
 function getRandomItem(array) {
   return array[Math.floor(Math.random() * array.length)];

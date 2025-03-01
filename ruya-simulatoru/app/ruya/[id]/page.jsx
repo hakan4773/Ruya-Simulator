@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from "react";
 
 export default function RuyaGoster({params}) {
-  const paramsData = React.use(params); 
+  const paramsData = React.use(params);
   const { id } = paramsData;
   const [myDream,setMydream]=useState(null);
   const [loading, setLoading] = useState(true);
-  const [isShared, setIsShared] = useState(false);
+  const [isShared, setIsShared] = useState(null);
   useEffect(()=>{
   async function RuyaGetir() {
  try {
@@ -19,6 +19,7 @@ export default function RuyaGoster({params}) {
 
   }
   setMydream(data)
+  setIsShared(data.isShare); 
   setLoading(false);
  } catch (error) {
   console.error("erorr: ",error)
@@ -28,7 +29,9 @@ export default function RuyaGoster({params}) {
 RuyaGetir();
 
   },[])
+  console.log("isShared ",isShared)
 
+  
   //seslendirme
   const handleSpeak = () => {
     if (myDream && myDream.story) {
@@ -43,20 +46,22 @@ RuyaGetir();
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <div className="loader"></div>
-        <p className="mt-4 text-lg text-gray-700">Oluşturuluyor...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-300 ">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        <p className="mt-4 text-lg text-gray-700"> Oluşturuluyor...</p>
       </div>
     );
   }
 
   //paylaşma
-const handleShare=async(isShared)=> {
+const handleShare=async()=> {
 try {
+  const currentIsShared = isShared; 
+  
   const response =await fetch(`/api/ruya-olustur/${id}`,  
-    { method: "PUT",body: JSON.stringify({ isShare: !isShared })
-    ,headers: { "Content-Type": "application/json" },}); 
- 
+    { method: "PUT",body: JSON.stringify({ isShare:! currentIsShared })
+    ,headers: { "Content-Type": "application/json" }}); 
+
     if (!response.ok) {
       const errorText = await response.text(); 
     throw new Error(`Rüya paylaşılamadı: ${errorText || response.statusText}`);
@@ -103,10 +108,12 @@ setIsShared(data.isShare);
             Arşive Ekle
           </button>
           <button className="flex-1 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-          onClick={()=>handleShare(!isShared)}
+          onClick={handleShare}
           
           >
-            Paylaş
+          {
+            isShared ? "Paylaşıldı" : "Paylaş"
+          }  
           </button>
         </div>
       </div>
