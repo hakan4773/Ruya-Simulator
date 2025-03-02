@@ -117,7 +117,7 @@ export async function GET() {
 
     await ruya.save();
 
-    return NextResponse.json({ id: ruya._id, story, image: imageUrl }, { status: 200 });
+    return NextResponse.json({ id: ruya._id, story, image: imageUrl,mekan: ruya.mekan,eylem:ruya.eylem,karakter:ruya.karakter,ton:ruya.ton, }, { status: 200 });
   } catch (error) {
     console.error('Hata:', error);
     return NextResponse.json({ error: error.message || 'Bir hata oluştu.' }, { status: 500 });
