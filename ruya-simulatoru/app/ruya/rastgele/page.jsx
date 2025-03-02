@@ -5,7 +5,11 @@ function page() {
 const [randomStories, setRandomStories] = useState(null);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
- 
+
+const [selectedLang, setSelectedLang] = useState("en");
+const [loadingTranslate, setLoadingTranslate] = useState(false);
+const [translatedStory, setTranslatedStory] = useState(randomStories.story);
+
 useEffect(() => {
   async function fetchRandomStories() {
     try {
@@ -22,7 +26,7 @@ useEffect(() => {
       console.error("Rastgele rüya hatası:", error);
       setError(error.message);
     } finally {
-      setLoading(false); // Yükleme durumunu her durumda kapat
+      setLoading(false); 
     }
   }
   fetchRandomStories();
@@ -56,6 +60,38 @@ const handleSpeak = () => {
   }
 };
 
+
+const translateText = async (text, targetLang) => {
+  setLoadingTranslate(true);
+  try {
+      const response = await fetch(`https://lingva.ml/api/v1/auto/${targetLang}/${encodeURIComponent(text)}`);
+      const data = await response.json();
+      setLoadingTranslate(false);  
+      return data.translation;
+
+  } catch (error) {
+      console.error("Çeviri yapılamadı:", error);
+  }
+
+};
+
+
+
+const handleTranslate=async()=> {
+  if (myDream && myDream.story) {
+    try {
+      const translation = await translateText(myDream.story, selectedLang);
+      setTranslatedStory(translation);
+    } catch (error) {
+      console.error("Çeviri yapılamadı:", error); 
+  }
+
+}}
+
+
+
+
+
 if (loading) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-300 ">
@@ -72,6 +108,11 @@ if (error) {
   );
 }
 
+const handleFavorite = async () => {
+  alert("Geliştirme aşamasında");
+};
+
+
   return (
 
     <div className='container mx-auto  flex flex-col items-center justify-center min-h-screen  py-8'>
@@ -82,8 +123,6 @@ if (error) {
         >
           Yeni Rüya Oluştur
         </button>
-
-
 
       <div className="relative w-full  mb-6">
       {randomStories?.image && (
@@ -111,7 +150,7 @@ if (error) {
           <button className="flex-1 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
             Devam Et
           </button>
-          <button className="flex-1 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+          <button onClick={handleFavorite} className="flex-1 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
             Arşive Ekle
           </button>
           <button className="flex-1 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">            
