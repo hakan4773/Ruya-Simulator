@@ -1,5 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react";
+import { RiSpeakLine } from "react-icons/ri";
+import { CiPause1 } from "react-icons/ci";
 
 export default function RuyaGoster({params}) {
   const paramsData = React.use(params);
@@ -109,6 +111,10 @@ setIsShared(data.isShare);
 }
 
 }
+const handleFavorite = async () => {
+  alert("Geliştirme aşamasında");
+};
+
   
   return (
     <div className="container mx-auto min-h-screen flex items-center justify-center px-4">
@@ -128,13 +134,31 @@ setIsShared(data.isShare);
           {/* Rüya metni API'den gelecek */}
           {translatedStory || myDream?.story}
                   </p>
+
+<h2 className="text-xl font-bold">Rüya Detayları</h2>
+<div className="text-white mb-4 gap-3 flex flex-row flex-wrap ">
+<div className="flex items-center space-x-2">
+ <span className=" font-bold">Mekan: </span> <p> {myDream?.mekan}</p>
+ </div>
+ <div className="flex items-center space-x-2">
+ <span className=" font-bold">Eylem: </span> <p > {myDream?.eylem}</p>
+ </div>
+ <div className="flex items-center space-x-2">
+ <span className=" font-bold">Karakter: </span> <p> {myDream?.karakter}</p>
+ </div>
+ <div className="flex items-center space-x-2">
+ <span className=" font-bold">Ton: </span> <p> {myDream?.ton}</p>
+ </div>
+
+</div>
+
           <div>
-              <select className="text-black p-1" value={selectedLang}  onChange={(e)=>setSelectedLang(e.target.value)} >
-              <option value="en">English</option>
-              <option value="tr">Türkçe</option>
-              <option value="es">Español</option>
+              <select className=" p-1  bg-transparent border-2 rounded-lg text-white" value={selectedLang}  onChange={(e)=>setSelectedLang(e.target.value)} >
+              <option className="text-black"  value="en">English</option>
+              <option  className="text-black"  value="tr">Türkçe</option>
+              <option  className="text-black"  value="es">Español</option>
           </select>
-          <button onClick={handleTranslate} className="m-3 bg-red-500 p-1 rounded-md hover:bg-red-600"
+          <button onClick={handleTranslate} className="m-3 bg-red-500 p-1 w-20 rounded-md hover:bg-red-600"
           >Çevir</button>
           </div>   
         <div className="flex space-x-4">
@@ -143,7 +167,12 @@ setIsShared(data.isShare);
   <button
 onClick={() => {  window.speechSynthesis.cancel(); setIsSpeaking(false); }}
 className="flex-1 p-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
-Durdur
+
+<div className="flex justify-center items-center">
+<CiPause1 size={30} className=" text-white" />
+
+
+</div>
 </button>
         ) :(
 
@@ -151,14 +180,18 @@ Durdur
             onClick={handleSpeak}
             className="flex-1 p-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors"
           >
-          Seslendir  
+<div className="flex justify-center items-center">
+<RiSpeakLine size={30} className=" text-white"/>
+
+
+</div>
           </button> 
         )}
          
           <button className="flex-1 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
             Devam Et
           </button>
-          <button className="flex-1 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+          <button onClick={handleFavorite} className="flex-1 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
             Arşive Ekle
           </button>
           <button className="flex-1 p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
