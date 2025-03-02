@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Ruyalar from "../data/RuyaTonlari.json"
+import { set } from "mongoose";
 
 
 export default function RuyaTasarla() {
   const router = useRouter();
+    const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     mekan: "",
     eylem: "",
@@ -15,8 +17,10 @@ export default function RuyaTasarla() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
 try {
+
   const response=await fetch("/api/ruya-olustur",{
 method:"POST",
 headers: {
@@ -31,6 +35,7 @@ body: JSON.stringify(formData),
   const data=await response.json()
  const ruya_id=data.id;
  router.push(`/ruya/${ruya_id}`);
+ setLoading(false);
 
 } catch (error) {
   console.error("Hata:", error);
@@ -38,7 +43,14 @@ body: JSON.stringify(formData),
 }
    
   };
-  
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-300 ">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        <p className="mt-4 text-lg text-gray-700"> Oluşturuluyor...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto min-h-screen flex items-center justify-center px-4">
@@ -127,6 +139,7 @@ body: JSON.stringify(formData),
 
         <button
           type="submit"
+    
           className="w-full p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
         >
           Rüyamı Gör
